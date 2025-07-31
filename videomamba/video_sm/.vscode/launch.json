@@ -1,0 +1,73 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        // VSCode 상에서 표시될 이름
+        "name": "Debug: run_class_finetuning.py (torchrun)",
+        // 파이썬 디버거 사용
+        "type": "debugpy",
+        // 디버깅/실행 타입
+        "request": "launch",
+        
+        // 분산 학습을 위해 torch.distributed.run 모듈을 직접 호출
+        "module": "torch.distributed.run",
+        
+        // 분산 관련 인자와 run_class_finetuning.py의 인자를 모두 여기에 나열
+        "args": [
+          "--nproc_per_node=4",
+          // 이하 스크립트 실행 파일 및 스크립트 파라미터
+          "run_class_finetuning.py",
+          "--model", "videomamba_mbr_tiny",
+          "--data_path", "/home/oem/users/dhjung/new_k400/label",
+          "--prefix", "/home/oem/users/dhjung/kinetics400/kinetics_400/videos_320",
+          "--data_set", "Kinetics_sparse",
+          "--split", ",",
+          "--nb_classes", "400",
+          "--log_dir", "./videomamba_mbr_tiny_f8_res224", 
+          "--output_dir", "./videomamba_mbr_tiny_f8_res224",
+          "--batch_size", "64",
+          "--num_sample", "2",
+          "--input_size", "224",
+          "--short_side_size", "224",
+          "--save_ckpt_freq", "100",
+          "--num_frames", "8",
+          "--num_workers", "12",
+          "--warmup_epochs", "5",
+          "--tubelet_size", "1",
+          "--epochs", "70",
+          "--lr", "2e-4",
+          "--drop_path", "0.1",
+          "--aa", "rand-m5-n2-mstd0.25-inc1",
+          "--opt", "adamw",
+          "--opt_betas", "0.9", "0.999",
+          "--weight_decay", "0.1",
+          "--test_num_segment", "4",
+          "--test_num_crop", "3",
+          "--dist_eval",
+          "--bf16",
+          "--finetune", "./exp/k400/videomamba_tiny/checkpoint/videomamba_t16_k400_f8_res224.pth",
+          "--resume", "./exp/k400/videomamba_tiny/checkpoint/videomamba_t16_k400_f8_res224.pth",
+          "--eval"
+        ],
+        
+        // 쉘 스크립트에서 사용하던 환경변수들
+        // MASTER_PORT를 고정하거나 원하는 값으로 세팅
+        // ( $RANDOM % 20000 부분은 배제하고 단일 값 사용 )
+        "env": {
+          "MASTER_PORT": "12345",
+          "OMP_NUM_THREADS": "1",
+          
+          // 쉘 스크립트에서 쓰던 JOB_NAME/LOG_DIR 등도 필요하다면 추가
+          "JOB_NAME": "videomamba_mbr_tiny_f8_res224",
+          "LOG_DIR": "./logs/videomamba_mbr_tiny_f8_res224"
+        },
+  
+        // 디버그 콘솔 설정
+        "console": "integratedTerminal",
+  
+        // 필요 시 라이브러리 내부도 디버그할 수 있게
+        "justMyCode": false
+      }
+    ]
+  }
+  
